@@ -1,0 +1,26 @@
+---
+
+- set_fact:
+    os: "linux"
+
+- when: ansible_architecture == "x86_64"
+  block:
+    - set_fact:
+        architecture: "amd64"
+
+- set_fact:
+    package_name: "terraform_{{terraform_version}}_{{os}}_{{architecture}}.zip"
+
+- name: install unzip
+  yum:
+    name: unzip
+  become: yes
+
+- name: download and install
+  unarchive:
+    src: https://releases.hashicorp.com/terraform/{{terraform_version}}/{{package_name}}
+    dest: /usr/local/bin
+    mode: 0755
+    remote_src: yes
+    creates: /usr/local/bin/terraform
+  become: yes
